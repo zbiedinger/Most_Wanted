@@ -43,6 +43,7 @@ function mainMenu(person, people){
     break;
     case "family":
     // TODO: get person's family
+      displayPeople(displayFamily(person, people));
     break;
     case "descendants":
     // TODO: get person's descendants
@@ -73,11 +74,11 @@ function searchByName(people){
   return foundPerson;
 }
 
-function searchByTraits(people){
-  let trait = promptFor("What trait do you want to search by: 'gender', 'bod', 'height', 'weight', 'eyecolor', 'occupation'?", chars);
+// function searchByTraits(people){
+//   let trait = promptFor("What trait do you want to search by: 'gender', 'bod', 'height', 'weight', 'eyecolor', 'occupation'?", chars);
 
-  return foundPerson
-}
+//   return foundPerson
+// }
 
 // alerts a list of people
 function displayPeople(people){
@@ -86,6 +87,7 @@ function displayPeople(people){
   }).join("\n"));
 }
 
+//displays a person's traits
 function displayPerson(person){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
@@ -100,6 +102,31 @@ function displayPerson(person){
 
   // TODO: finish getting the rest of the information to display
   alert(personInfo);
+}
+
+//searchs for a persons imediate fmaily members
+function displayFamily(searchedPerson, people) {
+
+  let familyMembers = people.filter(function (person) {
+    if (person.id === searchedPerson[0].currentSpouse || searchedPerson[0].parents.includes(person.id) || searchedPerson[0].parents.includes(person.parents[0]) ||  searchedPerson[0].parents.includes(person.parents[1])) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  })
+
+  //Removes the originally searched person. They are on the list becuase the of the sibling criteria
+  familyMembers = familyMembers.filter(function (person) {
+    if (person.id === searchedPerson[0].id) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  })
+
+  return familyMembers;
 }
 
 // function that prompts and validates user input
