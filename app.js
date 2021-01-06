@@ -13,6 +13,7 @@ function app(people){
       break;
     case 'no':
       // TODO: search by traits
+      searchResults = searchByTraits(people);
       break;
       default:
     app(people); // restart app
@@ -33,11 +34,12 @@ function mainMenu(person, people){
     return app(people); // restart
   }
 
-  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+  let displayOption = prompt("Found " + person[0].firstName + " " + person[0].lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
 
   switch(displayOption){
     case "info":
     // TODO: get person's info
+      displayPerson(person);
     break;
     case "family":
     // TODO: get person's family
@@ -71,6 +73,12 @@ function searchByName(people){
   return foundPerson;
 }
 
+function searchByTraits(people){
+  let trait = promptFor("What trait do you want to search by: 'gender', 'bod', 'height', 'weight', 'eyecolor', 'occupation'?", chars);
+
+  return foundPerson
+}
+
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
@@ -81,8 +89,15 @@ function displayPeople(people){
 function displayPerson(person){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
-  let personInfo = "First Name: " + person.firstName + "\n";
-  personInfo += "Last Name: " + person.lastName + "\n";
+  let personInfo = "First Name: " + person[0].firstName + "\n";
+  personInfo += "Last Name: " + person[0].lastName + "\n";
+  personInfo += "Gender: " + person[0].gender.charAt(0).toUpperCase() + person[0].gender.slice(1) + "\n";
+  personInfo += "Date of Birth: " + person[0].dob + "\n";
+  personInfo += "Height: " + person[0].height + "\"" + "\n";
+  personInfo += "Weight: " + person[0].weight + " lb" + "\n";
+  personInfo += "Eye Color: " + person[0].eyeColor.charAt(0).toUpperCase() + person[0].eyeColor.slice(1) + "\n";
+  personInfo += "Occupation: " + person[0].occupation.charAt(0).toUpperCase() + person[0].occupation.slice(1) + "\n";
+
   // TODO: finish getting the rest of the information to display
   alert(personInfo);
 }
