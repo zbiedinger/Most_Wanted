@@ -13,7 +13,7 @@ function app(people) {
       break;
     case 'no':
       // TODO: search by traits
-      searchResults = searchByTraits(people);
+      displayPeople(searchByTraits(people));
       break;
     default:
       app(people); // restart app
@@ -98,6 +98,129 @@ function displayPerson(person) {
   alert(personInfo);
 }
 
+// function that prompts and validates user input
+function promptFor(question, valid) {
+  do {
+    var response = prompt(question).trim();
+  } while (!response || !valid(response));
+  return response;
+}
+
+// helper function to pass into promptFor to validate yes/no answers
+function yesNo(input) {
+  return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
+}
+
+// helper function to pass in as default promptFor validation
+function chars(input) {
+  return true; // default validation only
+}
+
+function searchByTraits(people) {
+  let criteriaSearch = promptFor("Which trait would you like to search by? You can choose gender, hieght, weight, eye color, or occupation", chars);
+  let traitSearchResults;
+  switch (criteriaSearch) {
+    case "gender":
+      traitSearchResults = searchByGender(people);
+      break;
+    case "height":
+      traitSearchResults = searchByHeight(people);
+      break;
+    case "weight":
+      traitSearchResults = searchByWeight(people);
+      break;
+    case "eye color":
+      traitSearchResults = searchByEyeColor(people);
+      break;
+    case "occupation":
+      traitSearchResults = searchByOccupation(people);
+      break;
+    default:
+      break;
+  }
+  return traitSearchResults;
+}
+
+function searchByGender(people) {
+  let gender = promptFor("What is the person's gender?", chars);
+
+  let foundPeople = people.filter(function (person) {
+    if (person.gender === gender) {
+      return true;
+    } 
+    else {
+      return false;
+    }
+
+  });
+
+  return foundPeople;
+}
+
+function searchByHeight(people) {
+  let height = promptFor("What is the person's height (inches)?", chars);
+
+  let foundPeople = people.filter(function (person) {
+    if (person.height == height) {
+      return true;
+    } 
+    else {
+      return false;
+    }
+
+  });
+
+  return foundPeople;
+}
+
+function searchByWeight(people) {
+  let weight = promptFor("What is the person's weight (pounds)?", chars);
+
+  let foundPeople = people.filter(function (person) {
+    if (person.weight == weight) {
+      return true;
+    } 
+    else {
+      return false;
+    }
+
+  });
+
+  return foundPeople;
+}
+
+function searchByEyeColor(people) {
+  let eyeColor = promptFor("What is the person's eye color?", chars);
+
+  let foundPeople = people.filter(function (person) {
+    if (person.eyeColor === eyeColor) {
+      return true;
+    } 
+    else {
+      return false;
+    }
+
+  });
+
+  return foundPeople;
+}
+
+function searchByOccupation(people) {
+  let occupation = promptFor("What is the person's weight (pounds)?", chars);
+
+  let foundPeople = people.filter(function (person) {
+    if (person.occupation === occupation) {
+      return true;
+    } 
+    else {
+      return false;
+    }
+
+  });
+
+  return foundPeople;
+}
+
 // Alerts a list of family members
 function displayFamily(searchedPerson, people) {
   let spouse = searchForSpouse(searchedPerson, people);
@@ -169,22 +292,4 @@ function familyFormatting(spouse, parents, siblings) {
     familyMembers = "No known family."
   }
   return familyMembers;
-}
-
-// function that prompts and validates user input
-function promptFor(question, valid) {
-  do {
-    var response = prompt(question).trim();
-  } while (!response || !valid(response));
-  return response;
-}
-
-// helper function to pass into promptFor to validate yes/no answers
-function yesNo(input) {
-  return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
-}
-
-// helper function to pass in as default promptFor validation
-function chars(input) {
-  return true; // default validation only
 }
