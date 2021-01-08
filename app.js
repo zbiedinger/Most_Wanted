@@ -13,23 +13,29 @@ function app(people) {
       break;
     case 'no':
       // TODO: search by traits
-      displayPeople(searchByTraits(people));
+      searchResults = traitPrompt(people);
       break;
     default:
       app(people); // restart app
       break;
   }
 
-  // Call the mainMenu function ONLY after you find the SINGLE person you are looking for
-  mainMenu(searchResults, people);
+  /* Call the mainMenu function ONLY after you find the SINGLE person you are looking for. 
+   Else display a list of all poeple*/
+  if (searchResults.length >= 1) {
+    mainMenu(searchResults, people);
+  }else{
+    displayPeople(searchResults);
+  }
 }
 
 // Menu function to call once you find who you are looking for
 function mainMenu(person, people) {
 
-  /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
+  /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. 
+  We need people in order to find descendants and other information that the user may want. */
 
-  if (!person) {
+  if (!person || person.length == 0) {
     alert("Could not find that individual.");
     return app(people); // restart
   }
@@ -39,7 +45,7 @@ function mainMenu(person, people) {
   switch (displayOption) {
     case "info":
       // TODO: get person's info
-      displayPerson(person);
+      displayPerson(person)
       break;
     case "family":
       // TODO: get person's family
@@ -47,6 +53,7 @@ function mainMenu(person, people) {
       break;
     case "descendants":
       // TODO: get person's descendants
+      displayPeople(findDescendants(person[0], people))
       break;
     case "restart":
       app(people); // restart
@@ -74,14 +81,14 @@ function searchByName(people) {
   return foundPerson;
 }
 
-// Alerts a list of people
+// alerts a list of people
 function displayPeople(people) {
   alert(people.map(function (person) {
     return person.firstName + " " + person.lastName;
   }).join("\n"));
 }
 
-// Displays a person's traits
+// Display a person's traits
 function displayPerson(person) {
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
@@ -111,13 +118,37 @@ function yesNo(input) {
   return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
 }
 
+// helper function to pass seachByGender to validate male/fmale answers
+function maleFemale() {
+  let input = promptFor("What is the person's gender?", chars);
+
+  if (input.toLowerCase() == "male" || input.toLowerCase() == "female") {
+    return input.toLowerCase();
+  } else {
+    alert("Not a valid input")
+    //the recusion of this function was causing issues. The user is currently not reprompted if invalid input is given
+    //maleFemale();
+  }
+}
+
 // helper function to pass in as default promptFor validation
 function chars(input) {
   return true; // default validation only
 }
 
+function traitPrompt(people){
+  let traitSearchResults = people;
+  do {
+    traitSearchResults = searchByTraits(traitSearchResults);
+    var response = promptFor("Do you want to search by any other traits? 'yes' or 'no'", yesNo).toLowerCase();
+  } while (response == "yes");
+
+  return traitSearchResults;
+}
+
 function searchByTraits(people) {
-  let criteriaSearch = promptFor("Which trait would you like to search by? You can choose gender, hieght, weight, eye color, or occupation", chars);
+  let criteriaSearch = promptFor("Which trait would you like to search by? You can choose gender, height, weight, eye color, or occupation", chars);
+
   let traitSearchResults;
   switch (criteriaSearch) {
     case "gender":
@@ -130,31 +161,33 @@ function searchByTraits(people) {
       traitSearchResults = searchByWeight(people);
       break;
     case "eye color":
-      traitSearchResults = searchByEyeColor(people);
+      traitSearchResults = searchByEyeColor(people)
       break;
     case "occupation":
-      traitSearchResults = searchByOccupation(people);
+      traitSearchResults = searchByOccupation(people)
       break;
     default:
+      alert("Not a valid input");
+      searchByTraits(people);
       break;
   }
+
   return traitSearchResults;
 }
 
 function searchByGender(people) {
-  let gender = promptFor("What is the person's gender?", chars);
+  let gender = maleFemale();
 
-  let foundPeople = people.filter(function (person) {
-    if (person.gender === gender) {
+  let foundPeopleByGender = people.filter(function (person) {
+    if (person.gender === gender.toLowerCase()) {
       return true;
-    } 
+    }
     else {
       return false;
     }
-
   });
 
-  return foundPeople;
+  return foundPeopleByGender;
 }
 
 function searchByHeight(people) {
@@ -163,11 +196,10 @@ function searchByHeight(people) {
   let foundPeople = people.filter(function (person) {
     if (person.height == height) {
       return true;
-    } 
+    }
     else {
       return false;
     }
-
   });
 
   return foundPeople;
@@ -179,11 +211,10 @@ function searchByWeight(people) {
   let foundPeople = people.filter(function (person) {
     if (person.weight == weight) {
       return true;
-    } 
+    }
     else {
       return false;
     }
-
   });
 
   return foundPeople;
@@ -195,27 +226,25 @@ function searchByEyeColor(people) {
   let foundPeople = people.filter(function (person) {
     if (person.eyeColor === eyeColor) {
       return true;
-    } 
+    }
     else {
       return false;
     }
-
   });
 
   return foundPeople;
 }
 
 function searchByOccupation(people) {
-  let occupation = promptFor("What is the person's weight (pounds)?", chars);
+  let occupation = promptFor("What is the person's occupation?", chars);
 
   let foundPeople = people.filter(function (person) {
     if (person.occupation === occupation) {
       return true;
-    } 
+    }
     else {
       return false;
     }
-
   });
 
   return foundPeople;
@@ -293,3 +322,33 @@ function familyFormatting(spouse, parents, siblings) {
   }
   return familyMembers;
 }
+
+function findDescendants(searchedPerson, people) {
+  let descendants;
+  if (searchedPerson !== undefined) {
+    descendants = people.filter(function (person) {
+      if (person.parents.includes(searchedPerson.id)) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    })
+
+    let searchedpeople = descendants;
+    let newDesc = [];
+
+    if (descendants !== undefined) {
+      for (let i = 0; i < descendants.length; i++) {
+        newDesc = findDescendants(searchedpeople[i], people);
+        
+        if (newDesc !== undefined) {
+          for (let j = 0; j < newDesc.length; j++) {
+            descendants.push(newDesc[j]);
+          }
+        }
+      }
+    }
+  }
+  return descendants;
+} 
